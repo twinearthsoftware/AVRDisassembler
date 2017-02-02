@@ -18,8 +18,8 @@ namespace ArduinoDisassembler
                 {
                     typeof(JMP), (opCode, enumerator) =>
                     {
-                        // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are always on even 
-                        // boundaries). The MCU knows this, so shifts the addrss one to the left when loading it.
+                        // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
+                        // always on even boundaries). The MCU knows this, so shifts the addrss one to the left when loading it.
                         var opBytes = enumerator.ReadWord(Endianness.LittleEndian);
                         var addressVal = opBytes.WordValue() << 1;
                         var addressOp = new Operand(addressVal, opBytes);
