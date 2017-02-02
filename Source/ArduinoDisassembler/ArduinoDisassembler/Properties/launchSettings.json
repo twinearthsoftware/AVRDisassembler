@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ArduinoDisassembler": {
+      "commandName": "Project",
+      "commandLineArgs": "--file \"C:\\Temp\\Blink.ino.1s.UnoR3.hex\""
+    }
+  }
+}
