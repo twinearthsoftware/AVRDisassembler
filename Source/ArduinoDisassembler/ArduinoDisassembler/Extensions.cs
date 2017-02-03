@@ -8,10 +8,10 @@ namespace ArduinoDisassembler
     {
         internal static byte[] ReadWord(this IEnumerator<MemoryCell> enumerator, Endianness endianness)
         {
+            enumerator.MoveNext();
             var byte1 = enumerator.Current.Value;
             enumerator.MoveNext();
             var byte2 = enumerator.Current.Value;
-            enumerator.MoveNext();
             return endianness == Endianness.BigEndian
                 ? new[] {byte1, byte2}
                 : new[] {byte2, byte1};

@@ -29,7 +29,7 @@ namespace ArduinoDisassembler
             try
             {
                 foreach (var assemblyStatement in disassembler.Disassemble())
-                    Console.WriteLine(assemblyStatement.ToString());
+                    Console.WriteLine(assemblyStatement);
 
                 Environment.Exit(0);
             }
