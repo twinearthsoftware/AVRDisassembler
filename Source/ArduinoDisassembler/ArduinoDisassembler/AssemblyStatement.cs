@@ -39,9 +39,10 @@ namespace ArduinoDisassembler
             var instruction = OpCode.Name;
             var operand1 = Operand1 == null ? string.Empty : $" {Operand1}";
             var operand2 = Operand2 == null ? string.Empty : $", {Operand2}";
-            var instructionWithOperands = $"{instruction}{operand1}{operand2}".ToLowerInvariant();
+            var instructionWithOperands = $"{instruction}{operand1}{operand2}".ToLowerInvariant().PadRight(24);
+            var comment = $"; {OpCode.Comment}";
 
-            return $"{offset}:\t{originalBytes}\t{instructionWithOperands}";
+            return $"{offset}:\t{originalBytes}\t{instructionWithOperands}{comment}";
         }
     }
 }
