@@ -117,6 +117,12 @@ namespace ArduinoDisassembler
             var opcodeLowByte = bytes[1];
 
             // Instructions
+            if (opcodeHighByte >> 2 == 0x07)                                              return new ADC();
+            if (opcodeHighByte >> 2 == 0x03)                                              return new ADD();
+            if (opcodeHighByte == 0x96)                                                   return new ADIW();
+            if (opcodeHighByte >> 2 == 0x08)                                              return new AND();
+            if ((opcodeHighByte & 0xf0) == 0x70)                                          return new ANDI();
+            if (opcodeHighByte >> 1 == 0x4a && (opcodeLowByte & 0x0f) == 0x05)            return new ASR();
             if (opcodeHighByte == 0x00 && opcodeLowByte == 0x00)                          return new NOP();
             if (opcodeHighByte >> 1 == 0x4a && (opcodeLowByte & 0x0f) >> 1 == 0x6)        return new JMP();                          
             if (opcodeHighByte >> 2 == 1)                                                 return new CPC();

@@ -21,7 +21,7 @@ namespace ArduinoDisassembler.Tests
             var bytes = new byte[] { 0b0000_1100, 0b0000_0000 };
             var opcode = Disassembler.IdentifyOpCode(bytes);
             Assert.IsTrue(opcode is _16BitOpCode);
-            Assert.IsTrue(opcode is ADC);
+            Assert.IsTrue(opcode is ADD);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace ArduinoDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesANDIOpCode()
         {
-            var bytes = new byte[] { 0b1001_0100, 0b0000_0101 };
+            var bytes = new byte[] { 0b0111_0000, 0b0000_0000 };
             var opcode = Disassembler.IdentifyOpCode(bytes);
             Assert.IsTrue(opcode is _16BitOpCode);
             Assert.IsTrue(opcode is ANDI);
@@ -54,7 +54,7 @@ namespace ArduinoDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesASROpCode()
         {
-            var bytes = new byte[] { 0b0111_0000, 0b0000_0000 };
+            var bytes = new byte[] { 0b1001_0100, 0b0000_0101 };
             var opcode = Disassembler.IdentifyOpCode(bytes);
             Assert.IsTrue(opcode is _16BitOpCode);
             Assert.IsTrue(opcode is ASR);
