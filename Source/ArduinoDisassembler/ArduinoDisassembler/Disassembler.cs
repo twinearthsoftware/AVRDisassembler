@@ -13,9 +13,6 @@ namespace ArduinoDisassembler
 
         private readonly DisassemblerOptions _options;
 
-        private static readonly Func<byte[], OpCode, AssemblyStatement> _instructionWithoutOperand =
-            (bytes, opCode) => new AssemblyStatement(opCode); 
-
         private readonly Dictionary<Type, Func<byte[], OpCode, IEnumerable<IOperand>>> _handlers =
             new Dictionary<Type, Func<byte[], OpCode, IEnumerable<IOperand>>>
             {
@@ -113,21 +110,95 @@ namespace ArduinoDisassembler
 
         public static OpCode IdentifyOpCode(byte[] bytes)
         {
-            var opcodeHighByte = bytes[0];
-            var opcodeLowByte = bytes[1];
+            var high = bytes[0];
+            var low = bytes[1];
+            var nibble1 = high >> 4;
+            var nibble2 = high & 0x0f;
+            var nibble3 = low >> 4;
+            var nibble4 = low & 0x0f;
 
             // Instructions
-            if (opcodeHighByte >> 2 == 0x07)                                              return new ADC();
-            if (opcodeHighByte >> 2 == 0x03)                                              return new ADD();
-            if (opcodeHighByte == 0x96)                                                   return new ADIW();
-            if (opcodeHighByte >> 2 == 0x08)                                              return new AND();
-            if ((opcodeHighByte & 0xf0) == 0x70)                                          return new ANDI();
-            if (opcodeHighByte >> 1 == 0x4a && (opcodeLowByte & 0x0f) == 0x05)            return new ASR();
-            if (opcodeHighByte == 0x00 && opcodeLowByte == 0x00)                          return new NOP();
-            if (opcodeHighByte >> 1 == 0x4a && (opcodeLowByte & 0x0f) >> 1 == 0x6)        return new JMP();                          
-            if (opcodeHighByte >> 2 == 1)                                                 return new CPC();
-            if (opcodeHighByte == 0x02)                                                   return new MULS();
-            if (opcodeHighByte == 0x03)                                                   return new MULSU();
+            if (nibble1 == 0b0000)
+            {
+                if (nibble2 >> 2 == 0b11)                                   return new ADD();
+            }
+            if (nibble1 == 0b0001)
+            {
+                if (nibble2 >> 2 == 0b11)                                   return new ADC();
+            }
+            if (nibble1 == 0b0010)
+            {
+                if (nibble2 >> 2 == 0b00)                                   return new AND();
+                if (nibble2 >> 2 == 0b01)                                   return new CLR();
+            }
+            if (nibble1 == 0b0111)
+            {
+                                                                            return new ANDI();
+            }
+            if (nibble1 == 0b1001)
+            {
+                if (nibble2 == 0b0110)                                      return new ADIW();
+                if (nibble2 == 0b0100)
+                {
+                    if (nibble4 == 0b1000)
+                    {
+                        if (nibble3 == 0b1000)                              return new CLC();
+                        if (nibble3 == 0b1001)                              return new CLZ();
+                        if (nibble3 == 0b1010)                              return new CLN();
+                        if (nibble3 == 0b1011)                              return new CLV();
+                        if (nibble3 == 0b1100)                              return new CLS();
+                        if (nibble3 == 0b1101)                              return new CLH();
+                        if (nibble3 == 0b1110)                              return new CLT();
+                        if (nibble3 == 0b1111)                              return new CLI();
+                        if (low >> 7 == 0x00)                               return new BSET();
+                        if (low >> 7 == 0x01)                               return new BCLR();
+                    }
+                }
+                if (nibble2 >> 1 == 0b010)
+                {
+                    if (nibble4 >> 1 == 0b111)                              return new CALL();
+                    if (nibble4 == 0b0101)                                  return new ASR();
+                    if (nibble4 == 0b0000)                                  return new COM();
+                } 
+                if (nibble2 == 0b1000)                                      return new CBI();
+                if (nibble2 == 0b0101)
+                {
+                    if (nibble3 == 0b1001 && nibble4 == 0b1000)             return new BREAK();
+                }
+            }
+            if (nibble1 == 0b1111)
+            {
+                if (nibble2 >> 1 == 0b100 && nibble4 >> 3 == 0b0)           return new BLD();
+                if (nibble2 >> 1 == 0b101 && nibble4 >> 3 == 0b0)           return new BST();
+                if (nibble2 >> 2 == 0b01)
+                {
+                    if (nibble4 << 1 == 0b1110)                             return new BRID();
+                    if (nibble4 << 1 == 0b1100)                             return new BRTC();
+                    if (nibble4 << 1 == 0b1010)                             return new BRHC();
+                    if (nibble4 << 1 == 0b1000)                             return new BRGE();
+                    if (nibble4 << 1 == 0b0100)                             return new BRPL();
+                    if (nibble4 << 1 == 0b0110)                             return new BRVC();
+                    if (nibble4 << 1 == 0b0010)                             return new BRNE();
+                    if (nibble4 << 1 == 0b0000)                             return new BRSH();
+                }
+                if (nibble2 >> 2 == 0b00)
+                {
+                    if (nibble4 << 1 == 0b1110)                             return new BRIE();
+                    if (nibble4 << 1 == 0b1100)                             return new BRTS();
+                    if (nibble4 << 1 == 0b1010)                             return new BRHS();
+                    if (nibble4 << 1 == 0b1000)                             return new BRLT();
+                    if (nibble4 << 1 == 0b0100)                             return new BRMI();
+                    if (nibble4 << 1 == 0b0110)                             return new BRVS();
+                    if (nibble4 << 1 == 0b0010)                             return new BREQ();
+                    if (nibble4 << 1 == 0b0000)                             return new BRLO();
+                }
+            }
+
+            if (high == 0x00 && low == 0x00)                                            return new NOP();
+            if (high >> 1 == 0x4a && (low & 0x0f) >> 1 == 0x6)                          return new JMP();                          
+            if (high >> 2 == 1)                                                                   return new CPC();
+            if (high == 0x02)                                                                     return new MULS();
+            if (high == 0x03)                                                                     return new MULSU();
 
             // Pseudoinstructions
             return new DATA();
