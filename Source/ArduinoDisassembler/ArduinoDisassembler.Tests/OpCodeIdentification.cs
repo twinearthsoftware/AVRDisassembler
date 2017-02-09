@@ -349,6 +349,141 @@ namespace ArduinoDisassembler.Tests
         }
 
         [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesCPOpCode()
+        {
+            var bytes = new byte[] { 0b0001_0100, 0b0000_0000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is CP);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesCPCOpCode()
+        {
+            var bytes = new byte[] { 0b0000_0100, 0b0000_0000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is CPC);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesCPIOpCode()
+        {
+            var bytes = new byte[] { 0b0011_0000, 0b0000_0000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is CPI);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesCPSEOpCode()
+        {
+            var bytes = new byte[] { 0b0001_0000, 0b0000_0000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is CPSE);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesDECOpCode()
+        {
+            var bytes = new byte[] { 0b1001_0100, 0b0000_1010 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is DEC);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesDESOpCode()
+        {
+            var bytes = new byte[] { 0b1001_0100, 0b0000_1011 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is DES);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesEICALLOpCode()
+        {
+            var bytes = new byte[] { 0b1001_0101, 0b0001_1001 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is EICALL);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesEIJMPOpCode()
+        {
+            var bytes = new byte[] { 0b1001_0100, 0b0001_1001 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is EIJMP);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesELPMOpCode1()
+        {
+            var bytes = new byte[] { 0b1001_0101, 0b1101_1000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is ELPM);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesELPMOpCode2()
+        {
+            var bytes = new byte[] { 0b1001_0000, 0b0000_0110 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is ELPM);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesELPMOpCode3()
+        {
+            var bytes = new byte[] { 0b1001_0000, 0b0000_0111 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is ELPM);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesFMULOpCode()
+        {
+            var bytes = new byte[] { 0b0000_0011, 0b0000_1000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is FMUL);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesFMULSOpCode()
+        {
+            var bytes = new byte[] { 0b0000_0011, 0b1000_0000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is FMULS);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesFMULSUOpCode()
+        {
+            var bytes = new byte[] { 0b0000_0011, 0b1000_1000 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is FMULSU);
+        }
+
+        [TestMethod]
+        public void DisassemblerCorrectlyIdentifiesICALLOpCode()
+        {
+            var bytes = new byte[] { 0b1001_0101, 0b0000_1001 };
+            var opcode = Disassembler.IdentifyOpCode(bytes);
+            Assert.IsTrue(opcode is _16BitOpCode);
+            Assert.IsTrue(opcode is ICALL);
+        }
+
+        [TestMethod]
         public void DisassemblerCorrectlyIdentifiesJMPOpCode()
         {
             var bytes = new byte[] {0b1001_0100, 0b0000_1100, 0b0000_0000, 0b1111_1111};
