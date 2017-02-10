@@ -671,7 +671,7 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesLDS16OpCode()
         {
-            var bytes = new byte[] { 0b1001_0000, 0b0000_0000 };
+            var bytes = new byte[] { 0b1010_0000, 0b0000_0000 };
             var opcode = Disassembler.IdentifyOpCode(bytes);
             Assert.IsTrue(opcode.Size == OpCodeSize._16);
             Assert.IsTrue(opcode is LDS16);
