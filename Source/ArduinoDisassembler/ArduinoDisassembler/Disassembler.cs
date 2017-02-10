@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ArduinoDisassembler.InstructionSet.OpCodes;
+using ArduinoDisassembler.InstructionSet.OpCodes.Arithmetic;
+using ArduinoDisassembler.InstructionSet.OpCodes.Bits;
+using ArduinoDisassembler.InstructionSet.OpCodes.Branch;
+using ArduinoDisassembler.InstructionSet.OpCodes.DataTransfer;
+using ArduinoDisassembler.InstructionSet.OpCodes.MCUControl;
 using ArduinoDisassembler.InstructionSet.Operands;
 using IntelHexFormatReader;
 
@@ -87,7 +92,7 @@ namespace ArduinoDisassembler
 
                 var opcode = IdentifyOpCode(bytes);
 
-                if (opcode is _32BitOpCode)
+                if (opcode.Size == OpCodeSize._32)
                 {
                     var extraBytes = enumerator.ReadWord(Endianness.LittleEndian);
                     bytes = bytes.Concat(extraBytes).ToArray();
@@ -174,6 +179,7 @@ namespace ArduinoDisassembler
                 }
                 if (nibble2 >> 1 == 0b010)
                 {
+                    if (nibble4 >> 1 == 0b110)                              return new JMP();
                     if (nibble4 >> 1 == 0b111)                              return new CALL();
                     if (nibble4 == 0b1010)                                  return new DEC();
                     if (nibble4 == 0b0101)                                  return new ASR();
