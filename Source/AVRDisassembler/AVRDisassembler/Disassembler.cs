@@ -86,8 +86,10 @@ namespace AVRDisassembler
                 var offset = enumerator.Index;
                 var bytes = enumerator.ReadWord(Endianness.LittleEndian);
 
-                var opcodes = OpCodeIdentification.IdentifyOpCode(bytes);
-                var opcode = opcodes.First();
+                var opcodes = OpCodeIdentification.IdentifyOpCode(bytes).ToList();
+                // TODO: make a preference configurable if synonyms exist.
+                // For now, just pick the first item.
+                var opcode = opcodes.Any() ? opcodes.First() : new DATA();
 
                 if (opcode.Size == OpCodeSize._32)
                 {
@@ -95,12 +97,13 @@ namespace AVRDisassembler
                     bytes = bytes.Concat(extraBytes).ToArray();
                 }
                 var type = opcode.GetType();
-                if (!_handlers.ContainsKey(type))
-                    throw new NotImplementedException();
 
-                var handler = _handlers[type];
                 var statement = new AssemblyStatement(opcode);
-                var operands = handler(bytes, opcode).ToList();
+                IList<IOperand> operands = new List<IOperand>();
+
+                if (_handlers.ContainsKey(type))
+                    operands = _handlers[type](bytes, opcode).ToList();
+                    
                 var numberOfOperands = operands.Count();
                 if (numberOfOperands > 0) statement.Operand1 = operands[0];
                 if (numberOfOperands > 1) statement.Operand2 = operands[1];

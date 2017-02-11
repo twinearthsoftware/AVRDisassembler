@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AVRDisassembler.InstructionSet.OpCodes;
 using AVRDisassembler.InstructionSet.OpCodes.Arithmetic;
 using AVRDisassembler.InstructionSet.OpCodes.Bits;
@@ -27,20 +26,21 @@ namespace AVRDisassembler
                 case 0b0000: result = IdentifyWithFirstNibble0000(nb2, nb3, nb4); break;
                 case 0b0001: result = IdentifyWithFirstNibble0001(nb2, nb3, nb4); break;
                 case 0b0010: result = IdentifyWithFirstNibble0010(nb2, nb3, nb4); break;
-                //case 0b0011: result = IdentifyWithFirstNibble0011(nb2, nb3, nb4); break;
-                //case 0b0100: result = IdentifyWithFirstNibble0100(nb2, nb3, nb4); break;
-                //case 0b0101: result = IdentifyWithFirstNibble0101(nb2, nb3, nb4); break;
-                //case 0b0110: result = IdentifyWithFirstNibble0110(nb2, nb3, nb4); break;
+                case 0b0011: result = IdentifyWithFirstNibble0011(nb2, nb3, nb4); break;
+                case 0b0100: result = IdentifyWithFirstNibble0100(nb2, nb3, nb4); break;
+                case 0b0101: result = IdentifyWithFirstNibble0101(nb2, nb3, nb4); break;
+                case 0b0110: result = IdentifyWithFirstNibble0110(nb2, nb3, nb4); break;
                 case 0b0111: result = IdentifyWithFirstNibble0111(nb2, nb3, nb4); break;
-                //case 0b1000: result = IdentifyWithFirstNibble1000(nb2, nb3, nb4); break;
+                case 0b1000: result = IdentifyWithFirstNibble1000(nb2, nb3, nb4); break;
                 case 0b1001: result = IdentifyWithFirstNibble1001(nb2, nb3, nb4); break;
-                //case 0b1010: result = IdentifyWithFirstNibble1010(nb2, nb3, nb4); break;
-                //case 0b1011: result = IdentifyWithFirstNibble1011(nb2, nb3, nb4); break;
-                //case 0b1100: result = IdentifyWithFirstNibble1100(nb2, nb3, nb4); break;
-                //case 0b1101: result = IdentifyWithFirstNibble1101(nb2, nb3, nb4); break;
-                //case 0b1110: result = IdentifyWithFirstNibble1110(nb2, nb3, nb4); break;
+                case 0b1010: result = IdentifyWithFirstNibble1010(nb2, nb3, nb4); break;
+                case 0b1011: result = IdentifyWithFirstNibble1011(nb2, nb3, nb4); break;
+                case 0b1100: result = IdentifyWithFirstNibble1100(nb2, nb3, nb4); break;
+                case 0b1101: result = IdentifyWithFirstNibble1101(nb2, nb3, nb4); break;
+                case 0b1110: result = IdentifyWithFirstNibble1110(nb2, nb3, nb4); break;
                 case 0b1111: result = IdentifyWithFirstNibble1111(nb2, nb3, nb4); break;
             }
+            if (result == null) yield break;
             foreach (var opCode in result)
                 yield return opCode;
         }
@@ -100,30 +100,30 @@ namespace AVRDisassembler
             switch (nb2 >> 2)
             {
                 case 0b00: yield return new AND(); yield return new TST(); yield break;
-                case 0b01: yield return new CLR(); yield break;
+                case 0b01: yield return new CLR(); yield return new EOR(); yield break;
                 case 0b10: yield return new OR(); yield break;
                 case 0b11: yield return new MOV(); yield break;
             }
         }
 
-        private static IOpCode IdentifyWithFirstNibble0011(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble0011(byte nb2, byte nb3, byte nb4)
         {
-            return new CPI();
+            yield return new CPI();
         }
 
-        private static IOpCode IdentifyWithFirstNibble0100(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble0100(byte nb2, byte nb3, byte nb4)
         {
-            return new SBCI();
+            yield return new SBCI();
         }
 
-        private static IOpCode IdentifyWithFirstNibble0101(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble0101(byte nb2, byte nb3, byte nb4)
         {
-            return new SUBI();
+            yield return new SUBI();
         }
 
-        private static IOpCode IdentifyWithFirstNibble0110(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble0110(byte nb2, byte nb3, byte nb4)
         {
-            return new ORI(); // Identical to SBR
+            yield return new ORI(); yield return new SBR();
         }
 
         private static IEnumerable<IOpCode> IdentifyWithFirstNibble0111(byte nb2, byte nb3, byte nb4)
@@ -131,7 +131,7 @@ namespace AVRDisassembler
             yield return new ANDI(); yield return new CBR();
         }
 
-        private static IOpCode IdentifyWithFirstNibble1000(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1000(byte nb2, byte nb3, byte nb4)
         {
             switch (nb2 >> 1)
             {
@@ -139,8 +139,8 @@ namespace AVRDisassembler
                 {
                     switch (nb4)
                     {
-                        case 0b0000: return new LD(); // Z1
-                        case 0b1000: return new LD(); // Y1
+                        case 0b0000: yield return new LD(); yield break; // Z1
+                        case 0b1000: yield return new LD(); yield break; // Y1
                     }
                     break;
                 }
@@ -148,13 +148,12 @@ namespace AVRDisassembler
                 {
                     switch (nb4)
                     {
-                        case 0b0000: return new ST(); // Z1
-                        case 0b1000: return new ST(); // Y1
+                        case 0b0000: yield return new ST(); yield break; // Z1
+                        case 0b1000: yield return new ST(); yield break; // Y1
                     }
                     break;
                 }
             }
-            return null;
         }
 
         private static IEnumerable<IOpCode> IdentifyWithFirstNibble1001(byte nb2, byte nb3, byte nb4)
@@ -236,9 +235,11 @@ namespace AVRDisassembler
                     {
                         case 0b1000:
                         {
+                            if (nb3 >> 3 == 0b0) yield return new BSET();
                             if (nb3 >> 3 == 0b1) yield return new BCLR();
                             switch (nb3)
                             {
+                                // BSET 
                                 case  0b0000: yield return new SEC(); yield break;
                                 case  0b0001: yield return new SEZ(); yield break;
                                 case  0b0010: yield return new SEN(); yield break;
@@ -247,6 +248,7 @@ namespace AVRDisassembler
                                 case  0b0110: yield return new SET(); yield break;
                                 case  0b0101: yield return new SEH(); yield break;
                                 case  0b0111: yield return new SEI(); yield break;
+                                // BCLR
                                 case  0b1000: yield return new CLC(); yield break;
                                 case  0b1001: yield return new CLZ(); yield break;
                                 case  0b1010: yield return new CLN(); yield break;
@@ -290,6 +292,7 @@ namespace AVRDisassembler
                                 case 0b1100: yield return new LPM(); yield break; // 1
                                 case 0b1101: yield return new ELPM(); yield break;
                                 case 0b1110: yield return new SPM(); yield break; // 1
+                                case 0b1111: yield return new SPM(); yield break; // 2
                             }
                             break;
                         }
@@ -314,40 +317,41 @@ namespace AVRDisassembler
             }
         }
 
-        private static IOpCode IdentifyWithFirstNibble1010(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1010(byte nb2, byte nb3, byte nb4)
         {
             switch (nb2 >> 3)
             {
-                case 0b0: return new LDS16();
-                case 0b1: return new STS16();
+                case 0b0: yield return new LDS16(); yield break;
+                case 0b1: yield return new STS16(); yield break;
             }
-            return null;
         }
 
-        private static IOpCode IdentifyWithFirstNibble1011(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1011(byte nb2, byte nb3, byte nb4)
         {
             switch (nb2 >> 3)
             {
-                case 0: return new IN();
-                case 1: return new OUT();
+                case 0: yield return new IN(); yield break;
+                case 1: yield return new OUT(); yield break;
             }
-            return null;
         }
 
-        private static IOpCode IdentifyWithFirstNibble1100(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1100(byte nb2, byte nb3, byte nb4)
         {
-            return new RJMP();
+            yield return new RJMP();
         }
 
-        private static IOpCode IdentifyWithFirstNibble1101(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1101(byte nb2, byte nb3, byte nb4)
         {
-            return new RCALL();
+            yield return new RCALL();
         }
 
-        private static IOpCode IdentifyWithFirstNibble1110(byte nb2, byte nb3, byte nb4)
+        private static IEnumerable<IOpCode> IdentifyWithFirstNibble1110(byte nb2, byte nb3, byte nb4)
         {
-            if (nb2 == 0b1111 && nb4 == 0b1111) return new SER(); // Identical to LDI with all bits set
-            return new LDI();
+            yield return new LDI();
+            if (nb2 == 0b1111 && nb4 == 0b1111)
+            {
+                yield return new SER();
+            }
         }
 
         private static IEnumerable<IOpCode> IdentifyWithFirstNibble1111(byte nb2, byte nb3, byte nb4)
