@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using IntelHexFormatReader.Model;
 
 namespace AVRDisassembler
 {
-    internal static class Extensions
+    public static class Extensions
     {
         internal static byte[] ReadWord(this IEnumerator<MemoryCell> enumerator, Endianness endianness)
         {
@@ -17,17 +20,49 @@ namespace AVRDisassembler
                 : new[] {byte2, byte1};
         }
 
-        internal static int WordValue(this byte[] word)
+        public static IDictionary<char,int> MapToMask(this byte[] bytes, string mask)
         {
-            var length = word.Length;
-            if (length > 4 || length == 0)
-                throw new ArgumentException($"Length of byte array ({length}) not within boundaries!");
+            if (mask == null) throw new IOException("Mask can not be null!");
+            var length = bytes.Length;
+            var maskParts = mask.Split(' ');
 
-            var result = 0;
-            for (var i = length - 1; i >= 0; i--)
-                result += word[i] << (8 * (length - 1 - i));
+            if (maskParts.Length != length || maskParts.Any(maskPart => maskPart.Length != 8))
+                throw new IOException(
+                    $"Mask definition '{mask}' not consistent with byte "
+                    + $"definition '${BitConverter.ToString(bytes)}'!");
 
+            var dictionaryKeys = maskParts.SelectMany(x => x).Distinct().ToArray();
+            var result = dictionaryKeys.ToDictionary(key => key, key => 0);
+
+            foreach (var k in dictionaryKeys)
+            {
+                var resultForKey = new List<bool>();
+                var toggledInMask = 
+                    new BitArray(maskParts.SelectMany(
+                        x => x.Reverse().Select(y => y == k))
+                        .ToArray());
+
+                var allBitsForVal = new BitArray(bytes);
+
+                for (var i = 0; i < toggledInMask.Length; i++)
+                {
+                    if (toggledInMask[i])
+                        resultForKey.Add(allBitsForVal[i]);
+                }
+                result[k] = GetIntFromBitArray(new BitArray(resultForKey.ToArray()));
+            }
             return result;
+        }
+
+        private static int GetIntFromBitArray(BitArray bitArray)
+        {
+            var value = 0;
+            for (var i = 0; i < bitArray.Length; i++)
+            {
+                if (bitArray[i])
+                    value += 1 << i;
+            }
+            return value;
         }
     }
 }

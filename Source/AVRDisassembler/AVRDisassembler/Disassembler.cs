@@ -19,17 +19,6 @@ namespace AVRDisassembler
             {
                 // Instructions
                 {
-                    typeof(JMP), (bytes, opCode) =>
-                    {
-                        // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
-                        // always on even boundaries). The MCU knows this, so shifts the addrss one to the left when loading it.
-                        var operandBytes = new []{ bytes[2], bytes[3]};
-                        var addressVal = operandBytes.WordValue() << 1;
-                        var addressOperand = new IntegerOperand(addressVal);
-                        return new[] {addressOperand};
-                    }
-                },
-                {
                     typeof(CPC), (bytes, opCode) =>
                     {
                         var byte1 = bytes[0];
@@ -99,10 +88,7 @@ namespace AVRDisassembler
                 var type = opcode.GetType();
 
                 var statement = new AssemblyStatement(opcode);
-                IList<IOperand> operands = new List<IOperand>();
-
-                if (_handlers.ContainsKey(type))
-                    operands = _handlers[type](bytes, opcode).ToList();
+                var operands = OperandExtraction.ExtractOperands(type, bytes).ToList();
                     
                 var numberOfOperands = operands.Count();
                 if (numberOfOperands > 0) statement.Operand1 = operands[0];
@@ -111,16 +97,6 @@ namespace AVRDisassembler
                 statement.OriginalBytes = enumerator.Buffer;
                 yield return statement;
             }
-        }
-
-        public IEnumerable<IOperand> ParseOperands(OpCode opcode, byte[] bytes)
-        {
-            var type = opcode.GetType();
-            if (!_handlers.ContainsKey(type))
-                throw new NotImplementedException();
-
-            var handler = _handlers[type];
-            return handler(bytes, opcode);
         }
     }
 }
