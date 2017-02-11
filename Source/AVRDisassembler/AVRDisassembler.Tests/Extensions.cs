@@ -42,7 +42,7 @@ namespace AVRDisassembler.Tests
         }
 
         [TestMethod]
-        public void MapToMaskAcceptsValidMaskMultipleBytes()
+        public void MapToMaskAcceptsValidMaskMultipleBytesMultipleParts()
         {
             var r1 = _random.Next(0, 255);
             var r2 = _random.Next(0, 255);
@@ -50,6 +50,16 @@ namespace AVRDisassembler.Tests
             Assert.IsTrue(result.Keys.Count == 2);
             Assert.IsTrue(result['a'] == r1);
             Assert.IsTrue(result['b'] == r2);
+        }
+
+        [TestMethod]
+        public void MapToMaskAcceptsValidMaskMultipleBytesSinglePart()
+        {
+            var r1 = _random.Next(0, 255);
+            var r2 = _random.Next(0, 255);
+            var result = new[] { (byte)r1, (byte)r2 }.MapToMask("aaaaaaaa aaaaaaaa");
+            Assert.IsTrue(result.Keys.Count == 1);
+            Assert.IsTrue(result['a'] == (r1 << 8) + r2);
         }
 
         #endregion

@@ -38,15 +38,14 @@ namespace AVRDisassembler
             {
                 var resultForKey = new List<bool>();
                 var toggledInMask = 
-                    new BitArray(maskParts.SelectMany(
-                        x => x.Reverse().Select(y => y == k))
-                        .ToArray());
+                    new BitArray(maskParts.SelectMany(x => x.Select(y => y == k)).ToArray());
 
-                var allBitsForVal = new BitArray(bytes);
+                var allBitsForVal = new BitArray(bytes.Reverse().ToArray());
 
-                for (var i = 0; i < toggledInMask.Length; i++)
+                var numberOfBits = toggledInMask.Length;
+                for (var i = 0; i < numberOfBits; i++)
                 {
-                    if (toggledInMask[i])
+                    if (toggledInMask[numberOfBits - i - 1])
                         resultForKey.Add(allBitsForVal[i]);
                 }
                 result[k] = GetIntFromBitArray(new BitArray(resultForKey.ToArray()));
