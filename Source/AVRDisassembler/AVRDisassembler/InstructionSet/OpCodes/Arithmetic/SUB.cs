@@ -1,4 +1,4 @@
-﻿namespace AVRDisassembler.InstructionSet.OpCodes
+﻿namespace AVRDisassembler.InstructionSet.OpCodes.Arithmetic
 {
     public class SUB : OpCode
     {

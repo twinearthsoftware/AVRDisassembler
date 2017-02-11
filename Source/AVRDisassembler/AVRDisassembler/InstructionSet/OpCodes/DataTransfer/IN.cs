@@ -1,4 +1,4 @@
-﻿namespace AVRDisassembler.InstructionSet.OpCodes
+﻿namespace AVRDisassembler.InstructionSet.OpCodes.DataTransfer
 {
     public class IN : OpCode
     {
