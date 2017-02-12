@@ -8,6 +8,7 @@
         ConstantData,           // K
         ConstantAddress,        // k
         BitRegisterIO,          // b
-        StatusRegisterBit       // s
+        StatusRegisterBit,      // s
+        IOLocation              // A
     }
 }

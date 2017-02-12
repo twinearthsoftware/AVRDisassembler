@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace AVRDisassembler.InstructionSet.Operands
 {
@@ -38,6 +37,10 @@ namespace AVRDisassembler.InstructionSet.Operands
                 case OperandType.ConstantAddress:
                 {
                     return string.Format("0x{0:X2}", Value);
+                }
+                case OperandType.IOLocation:
+                {
+                    return string.Format($"${Value}");
                 }
                 default:
                 {

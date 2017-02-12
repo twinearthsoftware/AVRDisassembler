@@ -14,6 +14,7 @@ namespace AVRDisassembler
         public static IEnumerable<IOperand> ExtractOperands(Type type, byte[] bytes)
         {
             #region Instructions
+
             if (   type == typeof(ADC)
                 || type == typeof(ADD)
                 || type == typeof(AND)
@@ -39,7 +40,9 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.ConstantData, vals['K']);
                 yield break;
             }
-            if (type == typeof(ANDI))
+            if (   type == typeof(ANDI)
+                || type == typeof(CBR)
+               )
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
                 yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
@@ -52,13 +55,17 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
                 yield break;
             }
-            if (type == typeof(BCLR))
+            if (   type == typeof(BCLR)
+                || type == typeof(BSET)
+               )
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- -sss----");
                 yield return new Operand(OperandType.StatusRegisterBit, vals['s']);
                 yield break;
             }
-            if (type == typeof(BLD))
+            if (   type == typeof(BLD)
+                || type == typeof(BST)
+               )
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd-bbb");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
@@ -98,16 +105,32 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
                 yield break;
             }
-            if (type == typeof(JMP))
+            if (   type == typeof(CALL)
+                || type == typeof(JMP)
+               )
             {
                 // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
                 // always on even boundaries). The MCU knows this, so shifts the addrss one to the left when loading it.
-                var vals = new[] { bytes[2], bytes[3] }.MapToMask("kkkkkkkk kkkkkkkk");
+                var vals = new[] { bytes[0], bytes[1], bytes[2], bytes[3] }
+                    .MapToMask("-------k kkkk---k kkkkkkkk kkkkkkkk");
+
                 var addressVal = vals['k'] << 1;
                 yield return new Operand(OperandType.ConstantAddress, addressVal);
                 yield break;
             }
-            if (type == typeof(BREAK))
+            if (type == typeof(CBI))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- AAAAAbbb");
+                yield return new Operand(OperandType.IOLocation, vals['A']);
+                yield return new Operand(OperandType.BitRegisterIO, vals['b']);
+                yield break;
+            }
+            if (   type == typeof(BREAK)
+                || type == typeof(CLC)
+                || type == typeof(CLH)
+                || type == typeof(CLI)
+                || type == typeof(CLN)
+               )
             {
                 // No operands
                 yield break;
@@ -120,7 +143,6 @@ namespace AVRDisassembler
             if (type == typeof(DATA))
             {
                 yield return new Operand(OperandType._RawData, bytes);
-                yield break;
             }
 
             #endregion
