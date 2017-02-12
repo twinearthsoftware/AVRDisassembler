@@ -190,24 +190,15 @@ namespace AVRDisassembler
                     yield return new Operand(OperandType.DestinationRegister, vals['d']);
                     switch (bytes[1] & 0x0f)
                     {
-                        case 0b0000:
-                            yield return new Operand(OperandType._ZRegister, false, false); break; // (Z1)
-                        case 0b0001:
-                            yield return new Operand(OperandType._ZRegister, true, false); break;  // (Z2)
-                        case 0b0010:
-                            yield return new Operand(OperandType._ZRegister, false, true); break;  // (Z3)
-                        case 0b1000:
-                            yield return new Operand(OperandType._YRegister, false, false); break; // (Y1)
-                        case 0b1001:
-                            yield return new Operand(OperandType._YRegister, true, false); break;  // (Y2)
-                        case 0b1010:
-                            yield return new Operand(OperandType._YRegister, false, true); break;  // (Y3)
-                        case 0b1100:
-                            yield return new Operand(OperandType._XRegister, false, false); break; // (X1)
-                        case 0b1101:
-                            yield return new Operand(OperandType._XRegister, true, false); break;  // (X2)
-                        case 0b1110:
-                            yield return new Operand(OperandType._XRegister, false, true); break;  // (X3)
+                        case 0b0000: yield return new Operand(OperandType._ZRegister, false, false); break; // (Z1)
+                        case 0b0001: yield return new Operand(OperandType._ZRegister, true, false); break;  // (Z2)
+                        case 0b0010: yield return new Operand(OperandType._ZRegister, false, true); break;  // (Z3)
+                        case 0b1000: yield return new Operand(OperandType._YRegister, false, false); break; // (Y1)
+                        case 0b1001: yield return new Operand(OperandType._YRegister, true, false); break;  // (Y2)
+                        case 0b1010: yield return new Operand(OperandType._YRegister, false, true); break;  // (Y3)
+                        case 0b1100: yield return new Operand(OperandType._XRegister, false, false); break; // (X1)
+                        case 0b1101: yield return new Operand(OperandType._XRegister, true, false); break;  // (X2)
+                        case 0b1110: yield return new Operand(OperandType._XRegister, false, true); break;  // (X3)
                     }
                 }
                 yield break;
