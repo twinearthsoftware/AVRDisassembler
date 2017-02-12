@@ -4,6 +4,7 @@ using AVRDisassembler.InstructionSet.OpCodes;
 using AVRDisassembler.InstructionSet.OpCodes.Arithmetic;
 using AVRDisassembler.InstructionSet.OpCodes.Bits;
 using AVRDisassembler.InstructionSet.OpCodes.Branch;
+using AVRDisassembler.InstructionSet.OpCodes.MCUControl;
 using AVRDisassembler.InstructionSet.Operands;
 
 namespace AVRDisassembler
@@ -73,6 +74,30 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
                 yield break;
             }
+            if (   type == typeof(BRCC)
+                || type == typeof(BRCS)
+                || type == typeof(BREQ)
+                || type == typeof(BRGE)
+                || type == typeof(BRHC)
+                || type == typeof(BRHS)
+                || type == typeof(BRID)
+                || type == typeof(BRIE)
+                || type == typeof(BRLO)
+                || type == typeof(BRLT)
+                || type == typeof(BRMI)
+                || type == typeof(BRNE)
+                || type == typeof(BRPL)
+                || type == typeof(BRSH)
+                || type == typeof(BRTC)
+                || type == typeof(BRTS)
+                || type == typeof(BRVC)
+                || type == typeof(BRVS)
+               )
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkk---");
+                yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
+                yield break;
+            }
             if (type == typeof(JMP))
             {
                 // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
@@ -80,6 +105,11 @@ namespace AVRDisassembler
                 var vals = new[] { bytes[2], bytes[3] }.MapToMask("kkkkkkkk kkkkkkkk");
                 var addressVal = vals['k'] << 1;
                 yield return new Operand(OperandType.ConstantAddress, addressVal);
+                yield break;
+            }
+            if (type == typeof(BREAK))
+            {
+                // No operands
                 yield break;
             }
 
