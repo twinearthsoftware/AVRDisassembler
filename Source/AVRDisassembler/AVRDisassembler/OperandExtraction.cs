@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AVRDisassembler.InstructionSet.OpCodes;
 using AVRDisassembler.InstructionSet.OpCodes.Arithmetic;
 using AVRDisassembler.InstructionSet.OpCodes.Bits;
@@ -15,17 +16,19 @@ namespace AVRDisassembler
         {
             #region Instructions
 
-            if (   type == typeof(ADC)
-                || type == typeof(ADD)
-                || type == typeof(AND)
-               )
+            if (new[]
+            {
+                typeof(ADC),   typeof(ADD),   typeof(AND),   typeof(CP),
+                typeof(CPC)
+            }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------rd ddddrrrr");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
                 yield return new Operand(OperandType.SourceRegister, vals['r']);
                 yield break;
             }
-            if (type == typeof(ADIW))
+
+            if (new[] { typeof(ADIW) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- KKddKKKK");
                 var r = 0;
@@ -40,74 +43,60 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.ConstantData, vals['K']);
                 yield break;
             }
-            if (   type == typeof(ANDI)
-                || type == typeof(CBR)
-               )
+
+            if (new[] { typeof(ANDI), typeof(CBR) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
                 yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
                 yield return new Operand(OperandType.ConstantData, vals['K']);
                 yield break;
             }
-            if (type == typeof(ASR))
+
+            if (new[] { typeof(ASR), typeof(COM) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
                 yield break;
             }
-            if (   type == typeof(BCLR)
-                || type == typeof(BSET)
-               )
+
+            if (new[] { typeof(BCLR), typeof(BSET) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- -sss----");
                 yield return new Operand(OperandType.StatusRegisterBit, vals['s']);
                 yield break;
             }
-            if (   type == typeof(BLD)
-                || type == typeof(BST)
-               )
+
+            if (new[] { typeof(BLD), typeof(BST) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd-bbb");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
                 yield return new Operand(OperandType.BitRegisterIO, vals['b']);
                 yield break;
             }
-            if (   type == typeof(BRBC)
-                || type == typeof(BRBS)
-               )
+
+            if (new[] { typeof(BRBC), typeof(BRBS) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkksss");
                 yield return new Operand(OperandType.StatusRegisterBit, vals['s']);
                 yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
                 yield break;
             }
-            if (   type == typeof(BRCC)
-                || type == typeof(BRCS)
-                || type == typeof(BREQ)
-                || type == typeof(BRGE)
-                || type == typeof(BRHC)
-                || type == typeof(BRHS)
-                || type == typeof(BRID)
-                || type == typeof(BRIE)
-                || type == typeof(BRLO)
-                || type == typeof(BRLT)
-                || type == typeof(BRMI)
-                || type == typeof(BRNE)
-                || type == typeof(BRPL)
-                || type == typeof(BRSH)
-                || type == typeof(BRTC)
-                || type == typeof(BRTS)
-                || type == typeof(BRVC)
-                || type == typeof(BRVS)
-               )
+
+            if (new[]
+            {
+                typeof(BRCC),  typeof(BRCS),  typeof(BREQ),  typeof(BRGE),
+                typeof(BRHC),  typeof(BRHS),  typeof(BRID),  typeof(BRIE),
+                typeof(BRLO),  typeof(BRLT),  typeof(BRMI),  typeof(BRNE),
+                typeof(BRPL),  typeof(BRSH),  typeof(BRTC),  typeof(BRTS),
+                typeof(BRVC),  typeof(BRVS)
+            }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkk---");
                 yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
                 yield break;
             }
-            if (   type == typeof(CALL)
-                || type == typeof(JMP)
-               )
+
+            if (new[] { typeof(CALL), typeof(JMP) }.Contains(type))
             {
                 // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
                 // always on even boundaries). The MCU knows this, so shifts the addrss one to the left when loading it.
@@ -118,19 +107,28 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.ConstantAddress, addressVal);
                 yield break;
             }
-            if (type == typeof(CBI))
+
+            if (new[] { typeof(CBI) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- AAAAAbbb");
                 yield return new Operand(OperandType.IOLocation, vals['A']);
                 yield return new Operand(OperandType.BitRegisterIO, vals['b']);
                 yield break;
             }
-            if (   type == typeof(BREAK)
-                || type == typeof(CLC)
-                || type == typeof(CLH)
-                || type == typeof(CLI)
-                || type == typeof(CLN)
-               )
+
+            if (new[] { typeof(CLR) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("------dd dddddddd");
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield break;
+            }
+
+            if (new[]
+            {
+                typeof(BREAK), typeof(CLC),   typeof(CLH),   typeof(CLI),
+                typeof(CLN),   typeof(CLS),   typeof(CLT),   typeof(CLV),
+                typeof(CLZ)
+            }.Contains(type))
             {
                 // No operands
                 yield break;
@@ -140,7 +138,7 @@ namespace AVRDisassembler
 
             #region Pseudoinstructions
 
-            if (type == typeof(DATA))
+            if (new[] { typeof(DATA) }.Contains(type))
             {
                 yield return new Operand(OperandType._RawData, bytes);
             }
