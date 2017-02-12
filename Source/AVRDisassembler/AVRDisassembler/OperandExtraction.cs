@@ -64,6 +64,15 @@ namespace AVRDisassembler
                 yield return new Operand(OperandType.BitRegisterIO, vals['b']);
                 yield break;
             }
+            if (   type == typeof(BRBC)
+                || type == typeof(BRBS)
+               )
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkksss");
+                yield return new Operand(OperandType.StatusRegisterBit, vals['s']);
+                yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
+                yield break;
+            }
             if (type == typeof(JMP))
             {
                 // To save a bit, the address is shifted on to the right prior to storing (this works because jumps are 
@@ -85,6 +94,12 @@ namespace AVRDisassembler
             }
 
             #endregion
+        }
+
+        public static int CalculateTwosComplement(int val, int numberOfBits)
+        {
+            var mask = 1 << numberOfBits - 1;
+            return -(val & mask) + (val & ~mask);
         }
     }
 }
