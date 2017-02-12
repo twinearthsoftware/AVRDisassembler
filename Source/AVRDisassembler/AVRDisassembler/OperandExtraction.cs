@@ -5,11 +5,13 @@ using AVRDisassembler.InstructionSet.OpCodes;
 using AVRDisassembler.InstructionSet.OpCodes.Arithmetic;
 using AVRDisassembler.InstructionSet.OpCodes.Bits;
 using AVRDisassembler.InstructionSet.OpCodes.Branch;
+using AVRDisassembler.InstructionSet.OpCodes.DataTransfer;
 using AVRDisassembler.InstructionSet.OpCodes.MCUControl;
 using AVRDisassembler.InstructionSet.Operands;
 
 namespace AVRDisassembler
 {
+    // TODO Implement LD Y4 / LD Z4 / ST Y4 / ST Z4
     public static class OperandExtraction
     {
         public static IEnumerable<IOperand> ExtractOperands(Type type, byte[] bytes)
@@ -19,7 +21,7 @@ namespace AVRDisassembler
             if (new[]
             {
                 typeof(ADC),    typeof(ADD),    typeof(AND),    typeof(CP),
-                typeof(CPC),    typeof(CPSE)
+                typeof(CPC),    typeof(CPSE),   typeof(EOR)
             }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------rd ddddrrrr");
@@ -52,9 +54,17 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(ASR), typeof(COM), typeof(DEC) }.Contains(type))
+            if (new[] { typeof(ASR), typeof(COM), typeof(DEC), typeof(INC) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield break;
+            }
+
+            if (new[] { typeof(LAC), typeof(LAS), typeof(LAT) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
+                yield return new Operand(OperandType._ZRegister, false, false);
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
                 yield break;
             }
@@ -123,10 +133,26 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] {typeof(DES)}.Contains(type))
+            if (new[] { typeof(DES) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------dd dddddddd");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield break;
+            }
+
+            if (new[] { typeof(FMUL), typeof(FMULS), typeof(FMULSU) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- -ddd-rrr");
+                yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
+                yield return new Operand(OperandType.SourceRegister, 16 + vals['r']);
+                yield break;
+            }
+
+            if (new[] {typeof(IN)}.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-----AAd ddddAAAA");
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(OperandType.IOLocation, vals['A']);
                 yield break;
             }
 
@@ -134,10 +160,56 @@ namespace AVRDisassembler
             {
                 typeof(BREAK),  typeof(CLC),    typeof(CLH),    typeof(CLI),
                 typeof(CLN),    typeof(CLS),    typeof(CLT),    typeof(CLV),
-                typeof(CLZ),    typeof(EICALL), typeof(EIJMP)
+                typeof(CLZ),    typeof(EICALL), typeof(EIJMP),  typeof(ICALL),
+                typeof(IJMP)
             }.Contains(type))
             {
                 // No operands
+                yield break;
+            }
+
+            // Instructions that potentially match more than one opcode:
+            if (type == typeof(ELPM))
+            {
+                if (bytes[0] == 0b1001_0101 && bytes[2] == 0b1101_1000)
+                {
+                    yield break; // (1) no operands
+                }
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(OperandType._ZRegister, (bytes[1] & 0x01) == 0b1, false); // (2) - (3)
+                yield break;
+            }
+
+            if (type == typeof(LD))
+            {
+                var b = bytes[0] >> 1;
+                if (b == 0b100_1000 || b == 0b100_0000) // X, Y, Z
+                {
+                    var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
+                    yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                    switch (bytes[1] & 0x0f)
+                    {
+                        case 0b0000:
+                            yield return new Operand(OperandType._ZRegister, false, false); break; // (Z1)
+                        case 0b0001:
+                            yield return new Operand(OperandType._ZRegister, true, false); break;  // (Z2)
+                        case 0b0010:
+                            yield return new Operand(OperandType._ZRegister, false, true); break;  // (Z3)
+                        case 0b1000:
+                            yield return new Operand(OperandType._YRegister, false, false); break; // (Y1)
+                        case 0b1001:
+                            yield return new Operand(OperandType._YRegister, true, false); break;  // (Y2)
+                        case 0b1010:
+                            yield return new Operand(OperandType._YRegister, false, true); break;  // (Y3)
+                        case 0b1100:
+                            yield return new Operand(OperandType._XRegister, false, false); break; // (X1)
+                        case 0b1101:
+                            yield return new Operand(OperandType._XRegister, true, false); break;  // (X2)
+                        case 0b1110:
+                            yield return new Operand(OperandType._XRegister, false, true); break;  // (X3)
+                    }
+                }
                 yield break;
             }
 
