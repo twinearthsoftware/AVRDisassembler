@@ -31,7 +31,9 @@ namespace AVRDisassembler
                     $"Mask definition '{mask}' not consistent with byte "
                     + $"definition '${BitConverter.ToString(bytes)}'!");
 
-            var dictionaryKeys = maskParts.SelectMany(x => x).Distinct().ToArray();
+            var dictionaryKeys = 
+                maskParts.SelectMany(x => x).Distinct().Where(x => x != '-').ToArray();
+
             var result = dictionaryKeys.ToDictionary(key => key, key => 0);
 
             foreach (var k in dictionaryKeys)

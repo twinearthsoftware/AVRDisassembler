@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AVRDisassembler.InstructionSet.OpCodes;
-using AVRDisassembler.InstructionSet.OpCodes.Arithmetic;
-using AVRDisassembler.InstructionSet.OpCodes.Branch;
-using AVRDisassembler.InstructionSet.OpCodes.MCUControl;
-using AVRDisassembler.InstructionSet.Operands;
 using IntelHexFormatReader;
 
 namespace AVRDisassembler
@@ -13,47 +8,6 @@ namespace AVRDisassembler
     public class Disassembler
     {
         private readonly DisassemblerOptions _options;
-
-        private readonly Dictionary<Type, Func<byte[], IOpCode, IEnumerable<IOperand>>> _handlers =
-            new Dictionary<Type, Func<byte[], IOpCode, IEnumerable<IOperand>>>
-            {
-                // Instructions
-                {
-                    typeof(CPC), (bytes, opCode) =>
-                    {
-                        var byte1 = bytes[0];
-                        var byte2 = bytes[1];
-                        var dReg = ((byte1 & 0x1) << 4) + (byte2 >> 4);
-                        var rReg = ((byte1 & 0x2) << 3) + (byte2 & 0x0f);
-                        return new[] {new RegisterOperand(dReg), new RegisterOperand(rReg)};
-                    }
-                },
-                {
-                    typeof(MULS), (bytes, opCode) =>
-                    {
-                        var b = bytes[1];
-                        var dReg = 16 + (b >> 4);
-                        var rReg = 16 + (b & 0x0f);
-                        return new [] {new RegisterOperand(dReg), new RegisterOperand(rReg)};
-                    }
-                },
-                {
-                    typeof(MULSU), (bytes, opCode) =>
-                    {
-                        var b = bytes[1];
-                        var dReg = 16 + (b >> 4);
-                        var rReg = 16 + (b & 0x0f);
-                        return new[] {new RegisterOperand(dReg), new RegisterOperand(rReg)};
-                    }
-                },
-                {
-                    typeof(NOP), (bytes, opCode) => new List<IOperand>()
-                },
-                // Pseudoinstructions
-                {
-                    typeof(DATA), (bytes, opCode) => new[]{new BytesOperand(bytes)}
-                }
-            };
 
         internal Disassembler(DisassemblerOptions options)
         {

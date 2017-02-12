@@ -22,6 +22,24 @@ namespace AVRDisassembler.Tests
         }
 
         [TestMethod]
+        public void MapToMaskAcceptsValidMaskSingleByteSinglePartWithDashesAtEnd()
+        {
+            var r = _random.Next(0, 255);
+            var result = new[] { (byte)r }.MapToMask("aaaaaa--");
+            Assert.IsTrue(result.Keys.Count == 1);
+            Assert.IsTrue(result['a'] == r >> 2);
+        }
+
+        [TestMethod]
+        public void MapToMaskAcceptsValidMaskSingleByteSinglePartWithDashesInBeginning()
+        {
+            var r = _random.Next(0, 255);
+            var result = new[] { (byte)r }.MapToMask("--aaaaaa");
+            Assert.IsTrue(result.Keys.Count == 1);
+            Assert.IsTrue(result['a'] == (r & 0x3f));
+        }
+
+        [TestMethod]
         public void MapToMaskAcceptsValidMaskSingleByteTwoParts()
         {
             var r1 = _random.Next(0, 255);
@@ -42,7 +60,7 @@ namespace AVRDisassembler.Tests
         }
 
         [TestMethod]
-        public void MapToMaskAcceptsValidMaskMultipleBytesMultipleParts()
+        public void MapToMaskAcceptsValidMaskMultipleBytesMultiplePartsOnePartPerByte()
         {
             var r1 = _random.Next(0, 255);
             var r2 = _random.Next(0, 255);
@@ -50,6 +68,17 @@ namespace AVRDisassembler.Tests
             Assert.IsTrue(result.Keys.Count == 2);
             Assert.IsTrue(result['a'] == r1);
             Assert.IsTrue(result['b'] == r2);
+        }
+
+        [TestMethod]
+        public void MapToMaskAcceptsValidMaskMultipleBytesMultipleParts()
+        {
+            const int r1 = 149;
+            const int r2 = 106;
+            var result = new[] { (byte)r1, (byte)r2 }.MapToMask("aabbbbbb bbaaaaaa");
+            Assert.IsTrue(result.Keys.Count == 2);
+            Assert.IsTrue(result['a'] == 170);
+            Assert.IsTrue(result['b'] ==  85);
         }
 
         [TestMethod]

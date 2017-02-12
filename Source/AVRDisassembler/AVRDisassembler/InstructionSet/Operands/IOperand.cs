@@ -2,7 +2,8 @@
 {
     public interface IOperand
     {
-        int OperandValue { get; set; }
-        byte[] OperandBytes { get; set; }
+        OperandType Type { get; set; }
+        byte[] Bytes { get; set; }
+        int Value { get; set; }
     }
 }
