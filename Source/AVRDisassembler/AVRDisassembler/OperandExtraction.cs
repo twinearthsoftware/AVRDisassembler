@@ -21,7 +21,8 @@ namespace AVRDisassembler
             if (new[]
             {
                 typeof(ADC),    typeof(ADD),    typeof(AND),    typeof(CP),
-                typeof(CPC),    typeof(CPSE),   typeof(EOR)
+                typeof(CPC),    typeof(CPSE),   typeof(EOR),    typeof(MOV),
+                typeof(MUL)
             }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------rd ddddrrrr");
@@ -46,7 +47,7 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(ANDI), typeof(CBR), typeof(CPI) }.Contains(type))
+            if (new[] { typeof(ANDI), typeof(CBR), typeof(CPI), typeof(LDI) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
                 yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
@@ -54,7 +55,11 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(ASR), typeof(COM), typeof(DEC), typeof(INC) }.Contains(type))
+            if (new[]
+            {
+                typeof(ASR),    typeof(COM),    typeof(DEC),    typeof(INC),
+                typeof(LSR)
+            }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
@@ -84,11 +89,22 @@ namespace AVRDisassembler
                 yield break;
             }
 
+            if (new[] {typeof(MOVW)}.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- ddddrrrr");
+                yield return new Operand(OperandType.DestinationRegister, vals['d'] << 1);
+                yield return new Operand(OperandType.SourceRegister, vals['r'] << 1);
+                yield break;
+            }
+
             if (new[] { typeof(BRBC), typeof(BRBS) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkksss");
                 yield return new Operand(OperandType.StatusRegisterBit, vals['s']);
-                yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
+                yield return new Operand(
+                    OperandType.ConstantAddress, 
+                    CalculateTwosComplement(vals['k'], 7) * 2)
+                    { RepresentationMode = RepresentationMode.RelativeOffset };
                 yield break;
             }
 
@@ -102,7 +118,33 @@ namespace AVRDisassembler
             }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------kk kkkkk---");
-                yield return new Operand(OperandType.ConstantAddress, CalculateTwosComplement(vals['k'], 7));
+                yield return new Operand(
+                    OperandType.ConstantAddress, 
+                    CalculateTwosComplement(vals['k'], 7) * 2)
+                    { RepresentationMode = RepresentationMode.RelativeOffset };
+
+                yield break;
+            }
+
+            if (new[] { typeof(LDS32) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1], bytes[2], bytes[3] }
+                    .MapToMask("-------d dddd---- kkkkkkkk kkkkkkkk");
+
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(
+                    OperandType.ConstantAddress, 
+                    new[] { bytes[2], bytes[3] })
+                    { RepresentationMode = RepresentationMode.FullBytes };
+                yield break;
+            }
+
+            if (new[] {typeof(LDS16)}.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-----kkk ddddkkkk");
+
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(OperandType.ConstantAddress, vals['k']);
                 yield break;
             }
 
@@ -133,7 +175,7 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(DES) }.Contains(type))
+            if (new[] { typeof(DES), typeof(LSL) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------dd dddddddd");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
@@ -143,6 +185,14 @@ namespace AVRDisassembler
             if (new[] { typeof(FMUL), typeof(FMULS), typeof(FMULSU) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- -ddd-rrr");
+                yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
+                yield return new Operand(OperandType.SourceRegister, 16 + vals['r']);
+                yield break;
+            }
+
+            if (new[] { typeof(MULS) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- ddddrrrr");
                 yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
                 yield return new Operand(OperandType.SourceRegister, 16 + vals['r']);
                 yield break;
@@ -201,6 +251,16 @@ namespace AVRDisassembler
                         case 0b1110: yield return new Operand(OperandType._XRegister, false, true); break;  // (X3)
                     }
                 }
+                yield break;
+            }
+
+            if (type == typeof(LPM))
+            {
+                var lastNibble = bytes[1] & 0x0f;
+                if (lastNibble == 0b1000) yield break; // No Operands, 1
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
+                yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(OperandType._ZRegister, lastNibble == 0b0101, false);
                 yield break;
             }
 
