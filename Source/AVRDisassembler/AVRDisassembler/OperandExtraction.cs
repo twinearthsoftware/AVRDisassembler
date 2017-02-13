@@ -31,7 +31,7 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(ADIW) }.Contains(type))
+            if (new[] { typeof(ADIW), typeof(SBIW) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- KKddKKKK");
                 var r = 0;
@@ -50,7 +50,7 @@ namespace AVRDisassembler
             if (new[]
             {
                 typeof(ANDI),   typeof(CBR),    typeof(CPI),    typeof(LDI),
-                typeof(ORI)
+                typeof(ORI),    typeof(SBCI),   typeof(SBR)
             }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
@@ -67,6 +67,13 @@ namespace AVRDisassembler
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield break;
+            }
+
+            if (new[] { typeof(SER) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- dddd----");
+                yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
                 yield break;
             }
 
@@ -96,6 +103,14 @@ namespace AVRDisassembler
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd-bbb");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield return new Operand(OperandType.BitRegisterIO, vals['b']);
+                yield break;
+            }
+
+            if (new[] { typeof(SBRC), typeof(SBRS) }.Contains(type))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------r rrrr-bbb");
+                yield return new Operand(OperandType.SourceRegister, vals['r']);
                 yield return new Operand(OperandType.BitRegisterIO, vals['b']);
                 yield break;
             }
@@ -181,7 +196,7 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (new[] { typeof(CBI) }.Contains(type))
+            if (new[] { typeof(CBI), typeof(SBI), typeof(SBIC), typeof(SBIS) }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- AAAAAbbb");
                 yield return new Operand(OperandType.IOLocation, vals['A']);
@@ -240,7 +255,10 @@ namespace AVRDisassembler
                 typeof(BREAK),  typeof(CLC),    typeof(CLH),    typeof(CLI),
                 typeof(CLN),    typeof(CLS),    typeof(CLT),    typeof(CLV),
                 typeof(CLZ),    typeof(EICALL), typeof(EIJMP),  typeof(ICALL),
-                typeof(IJMP),   typeof(NOP),    typeof(RET),    typeof(RETI)
+                typeof(IJMP),   typeof(NOP),    typeof(RET),    typeof(RETI),
+                typeof(SEC),    typeof(SEH),    typeof(SEI),    typeof(SEN),
+                typeof(SES),    typeof(SET),    typeof(SEV),    typeof(SEZ),
+                typeof(SLEEP)
             }.Contains(type))
             {
                 // No operands
