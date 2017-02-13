@@ -20,7 +20,6 @@ namespace AVRDisassembler
                     syntax.ReportError(formatErrorMessage(fileOption));
             });
 
-            Console.WriteLine($"Selected file: {fileArg}!");
             var options = new DisassemblerOptions
             {
                 File = fileArg
