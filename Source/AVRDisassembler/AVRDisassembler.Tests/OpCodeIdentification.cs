@@ -484,8 +484,12 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesCALLOpCode()
         {
-            var bytes = new byte[] { 0b1001_0100, 0b0000_1110 };
-            AssertSingleOpCode(bytes, x => x is CALL);
+            var bytes = new byte[] 
+            {
+                0b1001_0100, 0b0000_1110,
+                0b0000_0000, 0b0000_0000
+            };
+            AssertSingleOpCode(bytes, x => x is CALL, OpCodeSize._32);
         }
 
         [TestMethod]
@@ -708,7 +712,11 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesJMPOpCode()
         {
-            var bytes = new byte[] { 0b1001_0100, 0b0000_1100, 0b0000_0000, 0b1111_1111 };
+            var bytes = new byte[] 
+            {
+                0b1001_0100, 0b0000_1100,
+                0b0000_0000, 0b1111_1111
+            };
             AssertSingleOpCode(bytes, x => x is JMP, OpCodeSize._32);
         }
 
@@ -827,7 +835,8 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesLDS32OpCode()
         {
-            var bytes = new byte[] { 0b1001_0000, 0b0000_0000, 0b0000_0000, 0b0000_0000 };
+            var bytes = new byte[] { 0b1001_0000, 0b0000_0000,
+                0b0000_0000, 0b0000_0000 };
             AssertSingleOpCode(bytes, x => x is LDS32, OpCodeSize._32);
         }
 
@@ -1226,7 +1235,11 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesSTS32OpCode()
         {
-            var bytes = new byte[] { 0b1001_0010, 0b0000_0000, 0b0000_0000, 0b0000_0000 };
+            var bytes = new byte[] 
+            {
+                0b1001_0010, 0b0000_0000,
+                0b0000_0000, 0b0000_0000
+            };
             AssertSingleOpCode(bytes, x => x is STS32, OpCodeSize._32);
         }
 
