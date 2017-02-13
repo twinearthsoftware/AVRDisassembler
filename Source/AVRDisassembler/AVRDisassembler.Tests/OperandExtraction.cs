@@ -390,5 +390,73 @@ namespace AVRDisassembler.Tests
             Assert.IsTrue(k.Type == OperandType.ConstantAddress);
             Assert.IsTrue(k.Value == 0);
         }
+
+        [TestMethod]
+        public void OperandsForBRVCGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(BRVC),
+                new byte[] { 0b1111_0100, 0b0000_1011 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 1);
+            var k = results[0];
+            Assert.IsTrue(k.Type == OperandType.ConstantAddress);
+            Assert.IsTrue(k.Value == 2);
+        }
+
+        [TestMethod]
+        public void OperandsForBRVSGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(BRVS),
+                new byte[] { 0b1111_0011, 0b0101_0011 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 1);
+            var k = results[0];
+            Assert.IsTrue(k.Type == OperandType.ConstantAddress);
+            Assert.IsTrue(k.Value == -44);
+        }
+
+        [TestMethod]
+        public void OperandsForBSETGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(BSET),
+                new byte[] { 0b1001_0100, 0b0101_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 1);
+            var s = results[0];
+            Assert.IsTrue(s.Type == OperandType.StatusRegisterBit);
+            Assert.IsTrue(s.Value == 5);
+        }
+
+        [TestMethod]
+        public void OperandsForBSTGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(BST),
+                new byte[] { 0b1111_1010, 0b0001_0001 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 2);
+            var d = results[0];
+            var b = results[1];
+            Assert.IsTrue(d.Type == OperandType.DestinationRegister);
+            Assert.IsTrue(d.Value == 1);
+            Assert.IsTrue(b.Type == OperandType.BitRegisterIO);
+            Assert.IsTrue(b.Value == 1);
+        }
+
+        [TestMethod]
+        public void OperandsForCALLGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CALL),
+                new byte[] { 0b1001_0100, 0b0000_1110, 0b0000_0000, 0b0000_1111 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 1);
+            var k = results[0];
+            Assert.IsTrue(k.Type == OperandType.ConstantAddress);
+            Assert.IsTrue(k.Value == 30);
+        }
     }
 }
