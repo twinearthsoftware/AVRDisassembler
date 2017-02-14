@@ -9,12 +9,12 @@ namespace AVRDisassembler
     {
         private readonly DisassemblerOptions _options;
 
-        internal Disassembler(DisassemblerOptions options)
+        public Disassembler(DisassemblerOptions options)
         {
             _options = options;
         }
 
-        internal IEnumerable<AssemblyStatement> Disassemble()
+        public IEnumerable<AssemblyStatement> Disassemble()
         {
             var reader = new HexFileReader(_options.File, 4 * 1024 * 1024);
             var memoryRepresentation = reader.Parse();
@@ -30,8 +30,10 @@ namespace AVRDisassembler
                 var bytes = enumerator.ReadWord(Endianness.LittleEndian);
 
                 var opcodes = OpCodeIdentification.IdentifyOpCode(bytes).ToList();
+
                 // TODO: make a preference configurable if synonyms exist.
                 // For now, just pick the first item.
+
                 var opcode = opcodes.Any() ? opcodes.First() : new DATA();
 
                 if (opcode.Size == OpCodeSize._32)
@@ -39,16 +41,14 @@ namespace AVRDisassembler
                     var extraBytes = enumerator.ReadWord(Endianness.LittleEndian);
                     bytes = bytes.Concat(extraBytes).ToArray();
                 }
-                var type = opcode.GetType();
 
-                var statement = new AssemblyStatement(opcode);
-                var operands = OperandExtraction.ExtractOperands(type, bytes).ToList();
-                    
-                var numberOfOperands = operands.Count();
-                if (numberOfOperands > 0) statement.Operand1 = operands[0];
-                if (numberOfOperands > 1) statement.Operand2 = operands[1];
-                statement.Offset = offset;
-                statement.OriginalBytes = enumerator.Buffer;
+                var type = opcode.GetType();
+                var operands = OperandExtraction.ExtractOperands(type, bytes);
+                var statement = new AssemblyStatement(opcode, operands)
+                {
+                    Offset = offset,
+                    OriginalBytes = enumerator.Buffer
+                };
                 yield return statement;
             }
         }
