@@ -1,5 +1,5 @@
 ﻿using System;
-using System.CommandLine;
+using CommandLine;
 
 namespace AVRDisassembler
 {
@@ -7,38 +7,32 @@ namespace AVRDisassembler
     {
         private static void Main(string[] args)
         {
-            var fileArg = string.Empty;
-
-            ArgumentSyntax.Parse(args, syntax =>
+            Parser.Default.ParseArguments<CommandLineOptions>(args)
+            .WithParsed(options =>
             {
-                Func<Argument<string>,string> formatErrorMessage = 
-                    (x) => $"Mandatory option '{x.Help}' ({string.Join("|", x.Names)}) not specified!";
+                var disassemblerOptions = new DisassemblerOptions
+                {
+                    File = options.InputFile
+                };
 
-                var fileOption = syntax.DefineOption("f|file", ref fileArg, true, "File to parse");
+                var disassembler = new Disassembler(disassemblerOptions);
+                try
+                {
+                    foreach (var assemblyStatement in disassembler.Disassemble())
+                        Console.WriteLine(assemblyStatement);
 
-                if (fileOption.IsRequired && !fileOption.IsSpecified)
-                    syntax.ReportError(formatErrorMessage(fileOption));
-            });
-
-            var options = new DisassemblerOptions
-            {
-                File = fileArg
-            };
-            var disassembler = new Disassembler(options);
-            try
-            {
-                foreach (var assemblyStatement in disassembler.Disassemble())
-                    Console.WriteLine(assemblyStatement);
-
-                Environment.Exit(0);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("The following error occurred:");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                Environment.Exit(1);
-            }
+                    Environment.Exit((int) ExitCode.Success);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("The following error occurred:");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                    Environment.Exit((int) ExitCode.GeneralFailure);
+                }
+            })
+            .WithNotParsed(options => 
+                Environment.Exit((int) ExitCode.FailedToParseCommandLineArgs));
         }
     }
 }

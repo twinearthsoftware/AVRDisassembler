@@ -9,7 +9,7 @@
     <PackageTags>arduino avr disassembler hex</PackageTags>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
     <PackageReference Include="IntelHexFormatReader" Version="2.2.1" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-e170127-2" />
   </ItemGroup>
 </Project>
