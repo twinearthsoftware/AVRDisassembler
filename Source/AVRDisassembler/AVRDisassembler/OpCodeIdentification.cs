@@ -10,8 +10,7 @@ namespace AVRDisassembler
 {
     public static class OpCodeIdentification
     {
-        // TODO Implement LD Y4 / LD Z4 / ST Y4 / ST Z4
-        public static IEnumerable<IOpCode> IdentifyOpCode(byte[] bytes)
+        public static IEnumerable<IOpCode> IdentifyOpCode(byte[] bytes, bool reducedCore = false)
         {
             var high = bytes[0];
             var low = bytes[1];
@@ -33,16 +32,25 @@ namespace AVRDisassembler
                 case 0b0111: result = IdentifyWithFirstNibble0111(nb2, nb3, nb4); break;
                 case 0b1000: result = IdentifyWithFirstNibble1000(nb2, nb3, nb4); break;
                 case 0b1001: result = IdentifyWithFirstNibble1001(nb2, nb3, nb4); break;
-                case 0b1010: result = IdentifyWithFirstNibble1010(nb2, nb3, nb4); break;
+                case 0b1010:
+                {
+                    if (reducedCore) result = IdentifyWithFirstNibble1010(nb2, nb3, nb4);
+                    break;
+                }
                 case 0b1011: result = IdentifyWithFirstNibble1011(nb2, nb3, nb4); break;
                 case 0b1100: result = IdentifyWithFirstNibble1100(nb2, nb3, nb4); break;
                 case 0b1101: result = IdentifyWithFirstNibble1101(nb2, nb3, nb4); break;
                 case 0b1110: result = IdentifyWithFirstNibble1110(nb2, nb3, nb4); break;
                 case 0b1111: result = IdentifyWithFirstNibble1111(nb2, nb3, nb4); break;
             }
-            if (result == null) yield break;
-            foreach (var opCode in result)
-                yield return opCode;
+            if (result != null)
+                foreach (var opCode in result)
+                    yield return opCode;
+
+            if (reducedCore) yield break;
+
+            if ((nb1 == 0b1000 || nb1 == 0b1010))
+                yield return nb2 >> 1 == 0b00 ? (IOpCode) new LDD() : new STD(); 
         }
 
         private static IEnumerable<IOpCode> IdentifyWithFirstNibble0000(byte nb2, byte nb3, byte nb4)

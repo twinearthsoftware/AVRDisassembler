@@ -14,17 +14,18 @@ namespace AVRDisassembler.Tests
     [TestClass]
     public class OpCodeIdentification
     {
-        public static IEnumerable<IOpCode> Identify(byte[] bytes)
+        public static IEnumerable<IOpCode> Identify(byte[] bytes, bool rc = false)
         {
-            return AVRDisassembler.OpCodeIdentification.IdentifyOpCode(bytes);
+            return AVRDisassembler.OpCodeIdentification.IdentifyOpCode(bytes, rc);
         }
 
         public static void AssertSingleOpCode(
             byte[] bytes, 
             Func<IOpCode,bool> typeCheck, 
-            OpCodeSize size = OpCodeSize._16)
+            OpCodeSize size = OpCodeSize._16,
+            bool reducedCore = false)
         {
-            var opcodes = Identify(bytes).ToList();
+            var opcodes = Identify(bytes, reducedCore).ToList();
             Assert.IsTrue(opcodes.Count == 1);
             var opcode = opcodes.First();
             Assert.IsTrue(opcode.Size == size);
@@ -766,7 +767,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesLDOpCodeY1()
         {
             var bytes = new byte[] { 0b1000_0000, 0b0000_1000 };
-            AssertSingleOpCode(bytes, x => x is LD);
+            AssertDoubleOpCode(bytes, x => x is LD, x => x is LDD);
         }
 
         [TestMethod]
@@ -786,15 +787,15 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesLDOpCodeY4()
         {
-            var bytes = new byte[] { 0b1000_0000, 0b0000_1000 };
-            AssertSingleOpCode(bytes, x => x is LD);
+            var bytes = new byte[] { 0b1000_0000, 0b0000_1111 };
+            AssertSingleOpCode(bytes, x => x is LDD);
         }
 
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesLDOpCodeZ1()
         {
             var bytes = new byte[] { 0b1000_0000, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is LD);
+            AssertDoubleOpCode(bytes, x => x is LD, x => x is LDD);
         }
 
         [TestMethod]
@@ -815,7 +816,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesLDOpCodeZ4()
         {
             var bytes = new byte[] { 0b1000_0000, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is LD);
+            AssertDoubleOpCode(bytes, x => x is LD, x => x is LDD);
         }
 
         [TestMethod]
@@ -844,7 +845,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesLDS16OpCode()
         {
             var bytes = new byte[] { 0b1010_0000, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is LDS16);
+            AssertSingleOpCode(bytes, x => x is LDS16, reducedCore: true);
         }
 
         [TestMethod]
@@ -1180,7 +1181,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesSTOpCodeY1()
         {
             var bytes = new byte[] { 0b1000_0010, 0b0000_1000 };
-            AssertSingleOpCode(bytes, x => x is ST);
+            AssertDoubleOpCode(bytes, x => x is ST, x => x is STD);
         }
 
         [TestMethod]
@@ -1200,15 +1201,15 @@ namespace AVRDisassembler.Tests
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesSTOpCodeY4()
         {
-            var bytes = new byte[] { 0b1000_0010, 0b0000_1000 };
-            AssertSingleOpCode(bytes, x => x is ST);
+            var bytes = new byte[] { 0b1000_0010, 0b0000_0111 };
+            AssertSingleOpCode(bytes, x => x is STD);
         }
 
         [TestMethod]
         public void DisassemblerCorrectlyIdentifiesSTOpCodeZ1()
         {
             var bytes = new byte[] { 0b1000_0010, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is ST);
+            AssertDoubleOpCode(bytes, x => x is ST, x => x is STD);
         }
 
         [TestMethod]
@@ -1229,7 +1230,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesSTOpCodeZ4()
         {
             var bytes = new byte[] { 0b1000_0010, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is ST);
+            AssertDoubleOpCode(bytes, x => x is ST, x => x is STD);
         }
 
         [TestMethod]
@@ -1247,7 +1248,7 @@ namespace AVRDisassembler.Tests
         public void DisassemblerCorrectlyIdentifiesSTS16OpCode()
         {
             var bytes = new byte[] { 0b1010_1000, 0b0000_0000 };
-            AssertSingleOpCode(bytes, x => x is STS16);
+            AssertSingleOpCode(bytes, x => x is STS16, reducedCore: true);
         }
 
         [TestMethod]

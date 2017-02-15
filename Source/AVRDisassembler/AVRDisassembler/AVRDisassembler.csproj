@@ -6,7 +6,8 @@
     <Description>A cross-platform (.NET Core) Atmel AVR / Arduino disassembler, written in C#.</Description>
     <Copyright>Christophe Diericx</Copyright>
     <PackageProjectUrl>https://github.com/christophediericx/AVRDisassembler</PackageProjectUrl>
-    <PackageTags>arduino avr disassembler hex</PackageTags>
+    <PackageTags>arduino atmel avr disassembler hex</PackageTags>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/19640854?s=140</PackageIconUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
