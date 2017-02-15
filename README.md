@@ -8,7 +8,10 @@ A .NET Core (cross platform) ATMEL AVR / Arduino Disassembler.
 Run the application without arguments to print its usage:
 
 ```
-C:\Source\AVRDisassembler\Source\AVRDisassembler\AVRDisassembler>dotnet run AVRDisassembler
+dotnet run AVRDisassembler
+```
+
+```
 AVRDisassembler 0.1.0
 Christophe Diericx
 
