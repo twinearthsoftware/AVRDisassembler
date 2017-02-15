@@ -2,7 +2,7 @@
   "profiles": {
     "AVRDisassembler": {
       "commandName": "Project",
-      "commandLineArgs": "--file \"C:\\Temp\\ArduinoListener.ino.UnoR3.hex\""
+      "commandLineArgs": "--input \"C:\\Temp\\ArduinoListener.ino.UnoR3.hex\""
     }
   }
 }

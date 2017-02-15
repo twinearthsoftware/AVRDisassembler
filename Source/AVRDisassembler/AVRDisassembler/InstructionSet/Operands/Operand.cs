@@ -10,6 +10,7 @@ namespace AVRDisassembler.InstructionSet.Operands
         public int Value { get; set; }
         public bool Increment { get; set; }
         public bool Decrement { get; set; }
+        public bool Displacement { get; set; }
 
         public Operand(OperandType type)
         {
@@ -43,11 +44,12 @@ namespace AVRDisassembler.InstructionSet.Operands
             Decrement = decrement;
         }
 
-        public Operand(OperandType type, int val)
+        public Operand(OperandType type, int val, bool displacement = false)
             : this(type)
         {
             Type = type;
             Value = val;
+            Displacement = displacement;
         }
 
         public Operand(OperandType type, byte[] bytes)
@@ -67,10 +69,11 @@ namespace AVRDisassembler.InstructionSet.Operands
                 case RepresentationMode.Register:
                     return $"r{Value}";
                 case RepresentationMode.PointerRegister:
-                    return string.Format("{0}{1}{2}", 
+                    return string.Format("{0}{1}{2}{3}",
                         Decrement ? "-" : string.Empty,
                         Type == OperandType._XRegister ? "X" : Type == OperandType._YRegister ? "Y" : "Z",
-                        Increment ? "+" : string.Empty);
+                        (Increment || Displacement) ? "+" : string.Empty,
+                        Displacement ? Value.ToString() : string.Empty);
                 case RepresentationMode.Hexadecimal:
                     return string.Format("0x{0:X2}", Value).ToLowerInvariant();
                 case RepresentationMode.RelativeOffset:

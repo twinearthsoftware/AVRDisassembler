@@ -8,5 +8,6 @@
         int Value { get; set; }
         bool Increment { get; set; }
         bool Decrement { get; set; }
+        bool Displacement { get; set; }
     }
 }
