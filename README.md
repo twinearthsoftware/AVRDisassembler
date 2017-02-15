@@ -1,2 +1,2 @@
-# ArduinoDisassembler
-A .NET Core (cross platform) Arduino Disassembler.
+# AVRDisassembler
+A .NET Core (cross platform) ATMEL AVR / Arduino Disassembler written in C#.
