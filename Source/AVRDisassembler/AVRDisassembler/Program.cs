@@ -1,5 +1,7 @@
 ﻿using System;
 using CommandLine;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace AVRDisassembler
 {
@@ -12,15 +14,30 @@ namespace AVRDisassembler
             {
                 var disassemblerOptions = new DisassemblerOptions
                 {
-                    File = options.InputFile
+                    File = options.InputFile,
+                    JsonOutput = options.Json
                 };
 
                 var disassembler = new Disassembler(disassemblerOptions);
                 try
                 {
-                    foreach (var assemblyStatement in disassembler.Disassemble())
-                        Console.WriteLine(assemblyStatement);
+                    var disassembledStmts = disassembler.Disassemble();
 
+                    if (!options.Json)
+                    {
+                        foreach (var assemblyStatement in disassembledStmts)
+                            Console.WriteLine(assemblyStatement);
+                    }
+                    else
+                    {
+                        var serializerSettings = new JsonSerializerSettings()
+                        {
+                            Formatting = Formatting.Indented
+                        };
+                        serializerSettings.Converters.Add(new StringEnumConverter());
+                        var json = JsonConvert.SerializeObject(disassembledStmts, serializerSettings);
+                        Console.WriteLine(json);
+                    }
                     Environment.Exit((int) ExitCode.Success);
                 }
                 catch (Exception ex)
