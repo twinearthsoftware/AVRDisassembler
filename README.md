@@ -12,7 +12,7 @@ dotnet run AVRDisassembler
 ```
 
 ```
-AVRDisassembler 0.1.0
+AVRDisassembler 0.1.1
 Christophe Diericx
 
 ERROR(S):
