@@ -125,3 +125,10 @@ Optionally, one can also specify the **--json** parameter in order to emit an ob
   },
   ...
   ```
+
+
+## Changelog ##
+```
+0.1.1   Fix bugs in operand parsing for CBR, CLR. Add operand extraction tests.
+0.1.0   Initial release.
+```
