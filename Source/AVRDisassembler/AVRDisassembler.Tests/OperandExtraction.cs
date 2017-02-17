@@ -458,5 +458,130 @@ namespace AVRDisassembler.Tests
             Assert.IsTrue(k.Type == OperandType.ConstantAddress);
             Assert.IsTrue(k.Value == 30);
         }
+
+        [TestMethod]
+        public void OperandsForCBIGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CBI),
+                new byte[] { 0b1001_1000, 0b0001_1110 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 2);
+            var A = results[0];
+            var b = results[1];
+            Assert.IsTrue(A.Type == OperandType.IOLocation);
+            Assert.IsTrue(A.Value == 3);
+            Assert.IsTrue(b.Type == OperandType.BitRegisterIO);
+            Assert.IsTrue(b.Value == 6);
+        }
+
+        [TestMethod]
+        public void OperandsForCBRGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CBR),
+                new byte[] { 0b0111_1111, 0b0001_0111 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 2);
+            var d = results[0];
+            var K = results[1];
+            Assert.IsTrue(d.Type == OperandType.DestinationRegister);
+            Assert.IsTrue(d.Value == 17);
+            Assert.IsTrue(K.Type == OperandType.ConstantData);
+            Assert.IsTrue(K.Value == 8);
+        }
+
+        [TestMethod]
+        public void OperandsForCLCGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLC),
+                new byte[] { 0b1001_0100, 0b1000_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLHGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLH),
+                new byte[] { 0b1001_0100, 0b1101_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLIGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLI),
+                new byte[] { 0b1001_0100, 0b1111_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLNGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLN),
+                new byte[] { 0b1001_0100, 0b1010_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLRGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLR),
+                new byte[] { 0b0010_0100, 0b0000_1001 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 1);
+            var d = results[0];
+            Assert.IsTrue(d.Type == OperandType.DestinationRegister);
+            Assert.IsTrue(d.Value == 9);
+        }
+
+        [TestMethod]
+        public void OperandsForCLSGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLS),
+                new byte[] { 0b1001_0100, 0b1100_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLTGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLT),
+                new byte[] { 0b1001_0100, 0b1110_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLVGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLV),
+                new byte[] { 0b1001_0100, 0b1011_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
+
+        [TestMethod]
+        public void OperandsForCLZGetParsedCorrectly()
+        {
+            var results = GetOperands(typeof(CLZ),
+                new byte[] { 0b1001_0100, 0b1001_1000 })
+                .ToList();
+
+            Assert.IsTrue(results.Count == 0);
+        }
     }
 }

@@ -48,8 +48,8 @@ namespace AVRDisassembler
 
             if (new[]
             {
-                typeof(ANDI),   typeof(CBR),    typeof(CPI),    typeof(LDI),
-                typeof(ORI),    typeof(SBCI),   typeof(SBR),    typeof(SUBI)
+                typeof(ANDI),   typeof(CPI),    typeof(LDI),    typeof(ORI),
+                typeof(SBCI),   typeof(SBR),    typeof(SUBI)
             }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
@@ -67,6 +67,14 @@ namespace AVRDisassembler
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------d dddd----");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);
+                yield break;
+            }
+
+            if (type == typeof(CBR))
+            {
+                var vals = new[] { bytes[0], bytes[1] }.MapToMask("----KKKK ddddKKKK");
+                yield return new Operand(OperandType.DestinationRegister, 16 + vals['d']);
+                yield return new Operand(OperandType.ConstantData, 0xff - vals['K']);
                 yield break;
             }
 
@@ -217,14 +225,11 @@ namespace AVRDisassembler
                 yield break;
             }
 
-            if (type == typeof(CLR))
+            if (new[]
             {
-                var vals = new[] { bytes[0], bytes[1] }.MapToMask("-------- KKKK----");
-                yield return new Operand(OperandType.ConstantData, vals['K']);
-                yield break;
-            }
-
-            if (new[] { typeof(DES), typeof(LSL), typeof(ROL), typeof(TST) }.Contains(type))
+                typeof(DES),    typeof(LSL),    typeof(ROL),    typeof(TST),
+                typeof(CLR)
+            }.Contains(type))
             {
                 var vals = new[] { bytes[0], bytes[1] }.MapToMask("------dd dddddddd");
                 yield return new Operand(OperandType.DestinationRegister, vals['d']);

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.0</TargetFramework>
-    <Version>0.1.0-beta</Version>
+    <Version>0.1.1-beta</Version>
     <Description>A cross-platform (.NET Core) Atmel AVR / Arduino disassembler, written in C#.</Description>
     <Copyright>Christophe Diericx</Copyright>
     <PackageProjectUrl>https://github.com/christophediericx/AVRDisassembler</PackageProjectUrl>
