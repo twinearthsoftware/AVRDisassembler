@@ -31,7 +31,7 @@ Only a single parameter (an input file) is required. At the moment only **HEX** 
 
 ## How to use as a library ##
 
-**Note:** *Since this is the first release, the package has not been marked as stable yet.*
+**Note:** *This package has not been marked as stable yet.*
 
 [![NuGet version](https://badge.fury.io/nu/AVRDisassembler.svg)](https://badge.fury.io/nu/AVRDisassembler)
 
