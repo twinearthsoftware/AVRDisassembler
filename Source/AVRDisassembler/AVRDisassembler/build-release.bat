@@ -1,7 +1,7 @@
 @echo off
 
 set appname=AVRDisassembler
-set version=0.2
+set version=0.2.0
 
 echo **** Building %appname% release %version% ****
 
