@@ -1,18 +1,38 @@
 # AVRDisassembler
-A .NET Core (cross platform) ATMEL AVR / Arduino Disassembler. 
+A .NET Core (cross platform) ATMEL AVR / Arduino (Intel HEX) Disassembler. 
 
 ![AVRDisassembler](https://github.com/christophediericx/AVRDisassembler/blob/master/Images/AVRDisassembler.png)
+
+## Latest binaries ##
+
+| Operating System | Release |
+| ---------------- | ------- |
+| **Windows x64 (7-8-8.1-10)**      | [AVRDisassembler-0.2.0-Windows-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Windows-x64.zip) |
+| **Linux**        | [AVRDisassembler-0.2.0-Ubuntu.16.10-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Ubuntu.16.10-x64.zip) |
+|                  | [AVRDisassembler-0.2.0-Ubuntu.16.04-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Ubuntu.16.04-x64.zip) |
+|                  | [AVRDisassembler-0.2.0-Centos.7-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Centos.7-x64.zip) |
+|                  | [AVRDisassembler-0.2.0-Debian.8-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Debian.8-x64.zip) |
+| **OS X**         | [AVRDisassembler-0.2.0-OSX-Sierra-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-Sierra-x64.zip) |
+|                  | [AVRDisassembler-0.2.0-OSX-ElCapitan-x64](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-ElCapitan-x64.zip) |
+|                  | [AVRDisassembler-0.2.0-OSX-Yosemite-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-Yosemite-x64.zip) |
+
 
 ## How to use from the command line ##
 
 Run the application without arguments to print its usage:
 
+Windows:
 ```
-dotnet run AVRDisassembler
+AVRDisassembler.exe
+```
+
+Linux or OSX:
+```
+./AVRDisassembler
 ```
 
 ```
-AVRDisassembler 0.1.1
+AVRDisassembler 0.2.0
 Christophe Diericx
 
 ERROR(S):
@@ -31,7 +51,7 @@ Only a single parameter (an input file) is required. At the moment only **HEX** 
 
 ## How to use as a library ##
 
-**Note:** *This package has not been marked as stable yet.*
+**Note:** *This package has not been marked as stable. The reason for that is mostly that one of its dependencies (CommandLineParser) is currently still marked as prerelease*
 
 [![NuGet version](https://badge.fury.io/nu/AVRDisassembler.svg)](https://badge.fury.io/nu/AVRDisassembler)
 
@@ -129,6 +149,7 @@ Optionally, one can also specify the **--json** parameter in order to emit an ob
 
 ## Changelog ##
 ```
+0.2.0   Release binaries, build script.
 0.1.1   Fix bugs in operand parsing for CBR, CLR. Add operand extraction tests.
 0.1.0   Initial release.
 ```
