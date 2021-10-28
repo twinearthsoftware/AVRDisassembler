@@ -65,7 +65,7 @@ Install-Package AVRDisassembler -Pre
 
 ## How to build##
 
-Preconditions: ```7z``` and ```dotnet``` [https://dotnet.microsoft.com/download/dotnet/3.1](3.1)
+Preconditions: ```7z``` and ```dotnet``` [3.1](https://dotnet.microsoft.com/download/dotnet/3.1)
 
 
 
