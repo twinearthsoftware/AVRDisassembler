@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Title>AVRDisassembler</Title>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-    <Version>0.2.0-beta</Version>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.2.1-beta</Version>
     <Description>A cross-platform (.NET Core) Atmel AVR / Arduino disassembler, written in C#.</Description>
     <Authors>Christophe Diericx</Authors>
     <CopyRight>Christophe Diericx</CopyRight>
     <PackageProjectUrl>https://github.com/christophediericx/AVRDisassembler</PackageProjectUrl>
     <PackageTags>arduino atmel avr disassembler hex</PackageTags>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/19640854?s=140</PackageIconUrl>
-    <RuntimeIdentifiers>win7-x64;ubuntu.16.04-x64;ubuntu.16.10-x64;centos.7-x64;debian.8-x64;osx.10.10-x64;osx.10.11-x64;osx.10.12-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win7-x64;ubuntu.21.04-x64;ubuntu.21.04-x64;centos.7-x64;debian.8-x64;osx.10.10-x64;osx.10.11-x64;osx.10.12-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />

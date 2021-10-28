@@ -7,14 +7,14 @@ A .NET Core (cross platform) ATMEL AVR / Arduino (Intel HEX) Disassembler.
 
 | Operating System | Release |
 | ---------------- | ------- |
-| **Windows x64 (7-8-8.1-10)**      | [AVRDisassembler-0.2.0-Windows-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Windows-x64.zip) |
-| **Linux**        | [AVRDisassembler-0.2.0-Ubuntu.16.10-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Ubuntu.16.10-x64.zip) |
-|                  | [AVRDisassembler-0.2.0-Ubuntu.16.04-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Ubuntu.16.04-x64.zip) |
-|                  | [AVRDisassembler-0.2.0-Centos.7-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Centos.7-x64.zip) |
-|                  | [AVRDisassembler-0.2.0-Debian.8-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-Debian.8-x64.zip) |
-| **OS X**         | [AVRDisassembler-0.2.0-OSX-Sierra-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-Sierra-x64.zip) |
-|                  | [AVRDisassembler-0.2.0-OSX-ElCapitan-x64](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-ElCapitan-x64.zip) |
-|                  | [AVRDisassembler-0.2.0-OSX-Yosemite-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.0/AVRDisassembler-0.2.0-OSX-Yosemite-x64.zip) |
+| **Windows x64 (7-8-8.1-10)**      | [AVRDisassembler-0.2.1-Windows-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-Windows-x64.zip) |
+| **Linux**        | [AVRDisassembler-0.2.1-Ubuntu.21.04-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-Ubuntu.21.04-x64.zip) |
+|                  | [AVRDisassembler-0.2.1-Ubuntu.21.04-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-Ubuntu.21.04-x64.zip) |
+|                  | [AVRDisassembler-0.2.1-Centos.7-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-Centos.7-x64.zip) |
+|                  | [AVRDisassembler-0.2.1-Debian.8-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-Debian.8-x64.zip) |
+| **OS X**         | [AVRDisassembler-0.2.1-OSX-Sierra-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-OSX-Sierra-x64.zip) |
+|                  | [AVRDisassembler-0.2.1-OSX-ElCapitan-x64](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-OSX-ElCapitan-x64.zip) |
+|                  | [AVRDisassembler-0.2.1-OSX-Yosemite-x64.zip](https://github.com/christophediericx/AVRDisassembler/releases/download/v0.2.1/AVRDisassembler-0.2.1-OSX-Yosemite-x64.zip) |
 
 
 ## How to use from the command line ##
@@ -32,7 +32,7 @@ Linux or OSX:
 ```
 
 ```
-AVRDisassembler 0.2.0
+AVRDisassembler 0.2.1
 Christophe Diericx
 
 ERROR(S):
@@ -62,6 +62,23 @@ Alternatively, install the package using the nuget package manager console:
 ```
 Install-Package AVRDisassembler -Pre
 ```
+
+## How to build##
+
+Preconditions: ```7z``` and ```dotnet``` [https://dotnet.microsoft.com/download/dotnet/3.1](3.1)
+
+
+
+```bash
+
+cd AVRDisassembler/Source/AVRDissasembler/AVRDissasembler
+
+./build-release.sh # on linux
+./build-release.bat # on Windows
+
+```
+
+the binaries will be located in ```AVRDisassembler/Source/AVRDisassembler/AVRDisassembler/bin/dist```
 
 ## Sample output ##
 By default AVRDissassembler will write to stdout, making it easy to pipe output to a file.
@@ -149,6 +166,7 @@ Optionally, one can also specify the **--json** parameter in order to emit an ob
 
 ## Changelog ##
 ```
+0.2.1   Switch to netcoreapp3.1
 0.2.0   Release binaries, build script.
 0.1.1   Fix bugs in operand parsing for CBR, CLR. Add operand extraction tests.
 0.1.0   Initial release.
